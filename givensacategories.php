@@ -102,8 +102,6 @@ class GivensaCategories extends Module
 	{
 		// CSS
 		$this->context->controller->addCSS($this->_path.'views/css/elusive-icons/elusive-webfont.css');
-		// JS
-		// $this->context->controller->addJS($this->_path.'views/js/js_file_name.js');	
 	}
 
 	/**
@@ -124,8 +122,6 @@ class GivensaCategories extends Module
 	{
 		// CSS
 		$this->context->controller->addCSS($this->_path.'views/css/'.$this->name.'.css');
-		// JS
-		$this->context->controller->addJS($this->_path.'views/js/'.$this->name.'.js');
 	}
 
 /**
@@ -164,13 +160,9 @@ class GivensaCategories extends Module
 	 */
 	public function hookDisplayTop($params)
 	{	
-		$lang = (int)Context::getContext()->language->id;
-		//$cats = Category::getCategories($lang, true, false);				
+		$lang = (int)Context::getContext()->language->id;			
 		$cats = Category::getSubCategories($lang);				
-		//'subCategories' => $this->category->getSubCategories($this->context->language->id, true)
 		$this->smarty->assign('mycategories', $cats);	
-		//echo Tools::getValue('id_category');
-		
 		$this->givensaAssignCategory();
 
 
@@ -179,31 +171,6 @@ class GivensaCategories extends Module
    		//echo "\n id_category = " .$cat['id_category'] . " name = " . $cat['name'];
 		
 		return $this->display(__FILE__, 'views/templates/hooks/category.tpl');
-		//return $this->hookDisplayHome($params);
-	}
-
-	/**
- 	 * Home page hook
-	 */
-	public function hookDisplayHome($params)
-	{
-		return $this->display(__FILE__, 'views/templates/hooks/home.tpl');	
-	}
-
-	/**
- 	 * Left Column Hook
-	 */
-	public function hookDisplayRightColumn($params)
-	{
-		return $this->hookDisplayHome($params);
-	}
-
-	/**
- 	 * Right Column Hook
-	 */
-	public function hookDisplayLeftColumn($params)
-	{
-	 	return $this->hookDisplayHome($params);
 	}
 
 	/**
@@ -211,7 +178,8 @@ class GivensaCategories extends Module
 	 */
 	public function hookDisplayFooter($params)
 	{
-		return $this->hookDisplayHome($params);
+		// JS
+		$this->context->controller->addJS($this->_path.'views/js/'.$this->name.'.js');
 	}
 }
 
