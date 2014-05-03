@@ -90,7 +90,7 @@ class GivensaCategories extends Module
 	 */	
 	public function getContent()
 	{
-		return $this->display(__FILE__, 'views/templates/admin/givensacategories.tpl');
+		return $this->display(__FILE__, 'views/templates/admin/givensacategoriesadmin.tpl');
 	}
 
 	// BACK OFFICE HOOKS
@@ -130,18 +130,35 @@ class GivensaCategories extends Module
 	protected function givensaAssignCategory()
 	{
 		$this->category = new Category(Tools::getValue('id_category'), $this->context->language->id);
+		if($this->category->id == NULL) {
+			//echo "This is not a category page, no action needed";
+			return;
+		}
+		if ((int)$this->category->id_parent == Category::getRootCategory()->id ) {
+			//echo "This is a main category page";
+			$categoriesToShow = $this->category->getSubCategories($this->context->language->id, true);
+			$idAllProductsCategory = (int)$this->category->id;  //If the parent is root, then all products is ourself
+		} else {
+			//echo "This is a subcategory page";
+			$parentCategory = new Category((int)$this->category->id_parent, $this->context->language->id);
+			$categoriesToShow = $parentCategory->getSubCategories($this->context->language->id, true);
+			$idAllProductsCategory = (int)$this->category->id_parent;
+		}
 		// Assign category to the template
 		if ($this->category !== false && Validate::isLoadedObject($this->category) && $this->category->inShop() && $this->category->isAssociatedToShop())
 		{
 			$path = Tools::getPath($this->category->id, $this->product->name, true);
 			$this->context->smarty->assign(array(
 				'myCategory' => $this->category,
-				'mySubCategories' => $this->category->getSubCategories($this->context->language->id, true),
+				'myCategoriesToShow' => $categoriesToShow,
 				'my_id_category_current' => (int)$this->category->id,
 				'my_id_category_parent' => (int)$this->category->id_parent,
+				'my_id_all_products_category' => (int)$idAllProductsCategory,
 				'my_return_category_name' => Tools::safeOutput($this->category->name)
 			));
 		}
+		//echo "Parent category is " . $this->category->id_parent . ". This is " . $this->category->id;
+		//echo " Root category is "  . Configuration::get('PS_HOME_CATEGORY');
 	}
 	/**
  	 * Top of pages hook
@@ -150,7 +167,7 @@ class GivensaCategories extends Module
 	{	
 		$this->givensaAssignCategory();
 		
-		return $this->display(__FILE__, 'views/templates/hooks/category.tpl');
+		return $this->display(__FILE__, 'views/templates/hooks/givensacategories.tpl');
 	}
 
 	/**
