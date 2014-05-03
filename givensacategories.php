@@ -142,33 +142,13 @@ class GivensaCategories extends Module
 				'my_return_category_name' => Tools::safeOutput($this->category->name)
 			));
 		}
-		elseif (Category::inShopStatic($this->product->id_category_default, $this->context->shop))
-		{
-			$cat_default = new Category((int)$this->product->id_category_default);
-			if (Validate::isLoadedObject($cat_default) && $cat_default->active && $cat_default->isAssociatedToShop())
-				$path = Tools::getPath((int)$this->product->id_category_default, $this->product->name);
-		}
-		if (!isset($path) || !$path)
-			$path = Tools::getPath((int)$this->context->shop->id_category, $this->product->name);
-		$this->context->smarty->assign('path', $path);
-		
-		$this->context->smarty->assign('my_categories', Category::getHomeCategories($this->context->language->id));
-		//$this->context->smarty->assign(array('HOOK_PRODUCT_FOOTER' => Hook::exec('displayFooterProduct', array('product' => $this->product, 'category' => $this->category))));
 	}
 	/**
  	 * Top of pages hook
 	 */
 	public function hookDisplayTop($params)
 	{	
-		$lang = (int)Context::getContext()->language->id;			
-		$cats = Category::getSubCategories($lang);				
-		$this->smarty->assign('mycategories', $cats);	
 		$this->givensaAssignCategory();
-
-
-		//print_r ($cats);
-		//foreach ($cats as $cat)
-   		//echo "\n id_category = " .$cat['id_category'] . " name = " . $cat['name'];
 		
 		return $this->display(__FILE__, 'views/templates/hooks/category.tpl');
 	}
